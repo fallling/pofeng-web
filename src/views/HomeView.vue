@@ -84,9 +84,9 @@
           </keep-alive>
         </a-layout-content>
 
-        <a-layout-footer class="footer" :style="{ background: '' }">
+<!--        <a-layout-footer class="footer" :style="{ background: '' }">
           Pofeng ©2022 Created by Ant UED
-        </a-layout-footer>
+        </a-layout-footer>-->
       </a-layout>
     </a-layout>
   </a-layout>
@@ -179,16 +179,15 @@ export default defineComponent({
 }
 
 .content-wrapper {
-  min-height: 100%;
   display: flex;
   flex-direction: column;
-  height: fit-content;
 }
 
 .content {
   flex: fit-content;
-  padding: 24px 32px;
+/*  padding: 24px 32px;*/
   margin: 0;
+  height: 100vh;
 }
 
 .footer {

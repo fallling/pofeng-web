@@ -1,5 +1,5 @@
 <template>
-  <div style="">
+  <div id="container">
     <a-row :gutter="36" type="flex" style="">
 
       <a-col flex="auto">
@@ -92,22 +92,22 @@
     </a-col>
     </a-row>
 
-    <a-modal v-model:visible="ArticleVisible" title="新建文档" @ok="ArticleModalOK" okText="确认" cancel-text="取消">
+    <a-modal v-model:visible="ArticleVisible" title="新建文档" @ok="ArticleModalOK" >
       <p>Some contents...</p>
       <p>Some contents...</p>
       <p>Some contents...</p>
     </a-modal>
-    <a-modal v-model:visible="ExcelVisible" title="新建表格" @ok="ExcelModalOK" okText="确认" cancel-text="取消">
+    <a-modal v-model:visible="ExcelVisible" title="新建表格" @ok="ExcelModalOK">
       <p>Some contents...</p>
       <p>Some contents...</p>
       <p>Some contents...</p>
     </a-modal>
-    <a-modal v-model:visible="DrawVisible" title="新建画板" @ok="DrawModalOK" okText="确认" cancel-text="取消">
+    <a-modal v-model:visible="DrawVisible" title="新建画板" @ok="DrawModalOK">
       <p>Some contents...</p>
       <p>Some contents...</p>
       <p>Some contents...</p>
     </a-modal>
-    <a-modal v-model:visible="QuickVisible" title="添加快捷入口" @ok="DrawModalOK" okText="确认" cancel-text="取消">
+    <a-modal v-model:visible="QuickVisible" title="添加快捷入口" @ok="DrawModalOK">
       <a-form layout="vertical">
         <a-form-item label="标题">
           <a-input placeholder="输入标题，或关键词搜索我的知识库" ></a-input>
@@ -166,21 +166,18 @@ export default defineComponent({
     const ArticleModalOK = () => {
       ArticleVisible.value = false
     }
-
     const showExcelModal = () => {
       ExcelVisible.value = true
     }
     const ExcelModalOK = () => {
       ExcelVisible.value = false
     }
-
     const showDrawModal = () => {
       DrawVisible.value = true
     }
     const DrawModalOK = () => {
       DrawVisible.value = false
     }
-
     const showQuickModal = () => {
       QuickVisible.value = true
     }
@@ -208,9 +205,8 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
-.content-wrapper {
-
+#container {
+  padding: 24px 32px;
 }
 
 .dropdown-wrapper {

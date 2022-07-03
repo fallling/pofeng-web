@@ -3,10 +3,29 @@
     <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link>
   </nav>-->
-  <a-configprovider :locale="locale">
-    <router-view style="height: 100vh"/>
-  </a-configprovider>
+  <a-config-provider :locale="locale">
+    <section id="app">
+      <router-view style="height: 100vh"/>
+    </section>
+  </a-config-provider>
 </template>
+
+<script>
+import locale from 'ant-design-vue/lib/locale/zh_CN'
+import dayjs from 'dayjs'
+import 'dayjs/locale/zh-cn'
+
+dayjs.locale('zh-cn')
+
+export default {
+  name: 'App',
+  setup () {
+    return {
+      locale
+    }
+  }
+}
+</script>
 
 <style lang="scss">
 #app {
