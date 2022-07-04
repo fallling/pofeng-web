@@ -1,6 +1,9 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import PofengLogin from '../views/PofengLogin.vue'
+import ExploreView from '../views/ExploreView.vue'
+import SpaceView from '../views/SpaceView.vue'
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
@@ -16,6 +19,16 @@ const routes: Array<RouteRecordRaw> = [
     path: '/login',
     name: 'login',
     component: PofengLogin
+  },
+  {
+    path: '/explore',
+    name: 'explore',
+    component: ExploreView
+  },
+  {
+    path: '/space',
+    name: 'space',
+    component: SpaceView
   }
 ]
 

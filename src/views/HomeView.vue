@@ -4,11 +4,13 @@
       <div class="header-logo"></div>
       <div class="header-menu">
         <a-menu
+          @click="headerMenuHandleClick"
+          v-model:selectedKeys="currentMain"
           :style="{ lineHeight: '64px', marginRight: '64px' }"
           mode="horizontal">
-          <a-menu-item key="1">工作台</a-menu-item>
-          <a-menu-item key="2">广场</a-menu-item>
-          <a-menu-item key="3">空间</a-menu-item>
+          <a-menu-item key="home">工作台</a-menu-item>
+          <a-menu-item key="explore">广场</a-menu-item>
+          <a-menu-item key="space">空间</a-menu-item>
         </a-menu>
         <a-auto-complete
           style="width: 200px; margin:auto 0;"
@@ -50,8 +52,8 @@
       >
         <a-menu
           id="side-menu"
-          v-model:selectedKeys="selectedKeys"
-          @click="handleClick"
+          v-model:selectedKeys="sideMenuSelectedKeys"
+          @click="sideMenuHandleClick"
         >
           <a-menu-item key="WorkBenchView">
             <template #icon><LaptopOutlined/></template>工作台
@@ -95,6 +97,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { BellOutlined, UserOutlined, LaptopOutlined, CalendarOutlined, CarryOutOutlined, TeamOutlined, InboxOutlined, DeleteOutlined, BookOutlined } from '@ant-design/icons-vue'
+import { useRoute, useRouter } from 'vue-router'
 import type { MenuProps } from 'ant-design-vue'
 
 import WorkBenchView from '@/views/subView/WorkBenchView.vue'
@@ -104,6 +107,7 @@ import RecycleView from '@/views/subView/RecycleView.vue'
 import TaskView from '@/views/subView/TaskView.vue'
 import TeamView from '@/views/subView/TeamView.vue'
 import KnowledgeBaseView from '@/views/subView/KnowledgeBaseView.vue'
+import router from '@/router'
 export default defineComponent({
   name: 'HomeView',
   components: {
@@ -125,15 +129,26 @@ export default defineComponent({
     BellOutlined
   },
   setup () {
-    const selectedKeys = ref<string[]>(['CalendarView'])
-    const currentTabComponent = ref<string>('CalendarView')
-    const handleClick: MenuProps['onClick'] = e => {
+    const route = useRoute()
+    const router = useRouter()
+    const currentMain = ref<string[]>(['HomeView'])
+    const sideMenuSelectedKeys = ref<string[]>(['WorkBenchView'])
+    const currentTabComponent = ref<string>('WorkBenchView')
+    const headerMenuHandleClick: MenuProps['onClick'] = (e) => {
+      console.log('headerMenu click', e)
+      router.push({
+        name: e.key.toString()
+      })
+    }
+    const sideMenuHandleClick: MenuProps['onClick'] = e => {
       currentTabComponent.value = e.key.toString()
-      console.log('click', e)
+      console.log('sideMenu click', e)
     }
     return {
-      handleClick,
-      selectedKeys,
+      currentMain,
+      headerMenuHandleClick,
+      sideMenuHandleClick,
+      sideMenuSelectedKeys,
       currentTabComponent
     }
   }
