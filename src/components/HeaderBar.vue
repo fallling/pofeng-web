@@ -1,15 +1,15 @@
 <template>
-  <div id="header-wrap">
+  <div id="header">
     <div class="header-logo"></div>
     <div class="header-menu">
       <a-menu
-        v-model:openKeys="currentMain"
-        v-model:selectKeys="currentMain"
+        @click="headerMenuHandleClick"
+        v-model:selectedKeys="currentMain"
         :style="{ lineHeight: '64px', marginRight: '64px' }"
         mode="horizontal">
-        <a-menu-item key="HomeView">工作台</a-menu-item>
-        <a-menu-item key="ExploreView">广场</a-menu-item>
-        <a-menu-item key="SpaceView">空间</a-menu-item>
+        <a-menu-item key="home">工作台</a-menu-item>
+        <a-menu-item key="explore">广场</a-menu-item>
+        <a-menu-item key="space">空间</a-menu-item>
       </a-menu>
       <a-auto-complete
         style="width: 200px; margin:auto 0;"
@@ -48,6 +48,8 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { BellOutlined, UserOutlined } from '@ant-design/icons-vue'
+import { useRouter } from 'vue-router'
+import { MenuProps } from 'ant-design-vue'
 
 export default defineComponent({
   name: 'HeaderBar',
@@ -56,16 +58,24 @@ export default defineComponent({
     UserOutlined
   },
   setup () {
-    const currentMain = ref<string[]>(['HomeView'])
+    const router = useRouter()
+    const currentMain = ref([router.currentRoute.value.name])
+    const headerMenuHandleClick: MenuProps['onClick'] = (e) => {
+      console.log('headerMenu click', e)
+      router.push({
+        name: e.key.toString()
+      })
+    }
     return {
-      currentMain
+      currentMain,
+      headerMenuHandleClick
     }
   }
 })
 </script>
 
 <style scoped>
-#header-wrap {
+#header {
   display: flex;
   background-color: white;
   height: 64px;
@@ -74,18 +84,18 @@ export default defineComponent({
   z-index: 100;
   width: 100%;
 }
-#header-wrap .header-logo {
+.header-logo {
   position: absolute;
   width: 200px;
   height: 64px;
   background-color: darkcyan;
   margin-left: 60px;
 }
-#header-wrap .header-menu {
+.header-menu {
   margin: auto;
   display: flex;
 }
-#header-wrap .header-avatar{
+.header-avatar{
   position: absolute;
   right: 100px;
 }
