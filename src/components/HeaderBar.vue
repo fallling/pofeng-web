@@ -1,6 +1,8 @@
 <template>
   <div id="header">
-    <div class="header-logo"></div>
+    <div class="header-logo">
+      <img height="64"  style="vertical-align:top;" alt="logo" src="@/assets/pofengLogo.png">
+    </div>
     <div class="header-menu">
       <a-menu
         @click="headerMenuHandleClick"
@@ -12,8 +14,7 @@
         <a-menu-item key="space">空间</a-menu-item>
       </a-menu>
       <a-auto-complete
-        style="width: 200px; margin:auto 0;"
-      >
+        style="width: 200px; margin:auto 0;">
         <a-input-search placeholder="搜索"></a-input-search>
       </a-auto-complete>
     </div>
@@ -86,10 +87,7 @@ export default defineComponent({
 }
 .header-logo {
   position: absolute;
-  width: 200px;
-  height: 64px;
-  background-color: darkcyan;
-  margin-left: 60px;
+  margin-left: 80px;
 }
 .header-menu {
   margin: auto;
@@ -97,6 +95,6 @@ export default defineComponent({
 }
 .header-avatar{
   position: absolute;
-  right: 100px;
+  right: 60px;
 }
 </style>

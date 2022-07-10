@@ -132,16 +132,7 @@ const columns = [
 ]
 const data = [
   { articleId: '1', articleTitle: '新建文档', createUser: '破风', baseName: '吾有装潢之', lastEditTime: '651896' },
-  { articleId: '2', articleTitle: '新建文档', createUser: '破风', baseName: '吾有装潢之', lastEditTime: '651896' },
-  { articleId: '3', articleTitle: '新建文档', createUser: '破风', baseName: '吾有装潢之', lastEditTime: '651896' },
-  { articleId: '4', articleTitle: '新建文档', createUser: '破风', baseName: '吾有装潢之', lastEditTime: '651896' },
-  { articleId: '5', articleTitle: '新建文档', createUser: '破风', baseName: '吾有装潢之', lastEditTime: '651896' },
-  { articleId: '6', articleTitle: '新建文档', createUser: '破风', baseName: '吾有装潢之', lastEditTime: '651896' },
-  { articleId: '6', articleTitle: '新建文档', createUser: '破风', baseName: '吾有装潢之', lastEditTime: '651896' },
-  { articleId: '6', articleTitle: '新建文档', createUser: '破风', baseName: '吾有装潢之', lastEditTime: '651896' },
-  { articleId: '6', articleTitle: '新建文档', createUser: '破风', baseName: '吾有装潢之', lastEditTime: '651896' },
-  { articleId: '6', articleTitle: '新建文档', createUser: '破风', baseName: '吾有装潢之', lastEditTime: '651896' },
-  { articleId: '6', articleTitle: '新建文档', createUser: '破风', baseName: '吾有装潢之', lastEditTime: '651896' }
+  { articleId: '2', articleTitle: '新建文档', createUser: '破风', baseName: '吾有装潢之', lastEditTime: '651896' }
 ]
 
 export default defineComponent({

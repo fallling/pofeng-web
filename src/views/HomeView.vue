@@ -7,8 +7,7 @@
     <a-layout>
       <a-layout-sider
         width="256px"
-        :style="{ background: '#fff' }"
-      >
+        :style="{ background: '#fff' }">
         <a-menu
           id="side-menu"
           v-model:selectedKeys="sideMenuSelectedKeys"

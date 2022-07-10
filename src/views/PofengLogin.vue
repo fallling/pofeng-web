@@ -1,12 +1,13 @@
 <template>
-   <div id="login-container">
-     <div style="text-align: center; width: 100%">
-       <img :width="100" alt="logo" src="@/assets/logo.png">
-     </div>
-     <div>
-       <h2 style="margin: auto">破风</h2>
-       <p>俱怀逸兴壮思飞,欲上青天览日月</p>
-     </div>
+  <div>
+    <div id="login-container">
+      <div style="text-align: center; width: 100%">
+        <img :width="100" alt="logo" src="@/assets/logo.png">
+      </div>
+      <div>
+        <h2 style="margin: auto">破风</h2>
+        <p>俱怀逸兴壮思飞,欲上青天览日月</p>
+      </div>
       <a-form
         :model="formState"
         name="normal_login"
@@ -44,7 +45,10 @@
         </div>
 
         <a-form-item>
-          <a-button :disabled="disabled" type="primary" html-type="submit" class="login-form-button">
+          <a-button
+            type="primary"
+            html-type="submit"
+            class="login-form-button">
             登录
           </a-button>
           <a class="login-form-forgot" href="">忘记密码</a>
@@ -52,17 +56,20 @@
         </a-form-item>
       </a-form>
     </div>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, computed } from 'vue'
+import { defineComponent, reactive, computed, ref } from 'vue'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
+import axios from 'axios'
 
 interface FormState {
   username: string;
   password: string;
   remember: boolean;
 }
+
 export default defineComponent({
   name: 'PofengLogin',
   components: {
@@ -70,15 +77,36 @@ export default defineComponent({
     LockOutlined
   },
   setup () {
+    const data = ref('')
     const formState = reactive<FormState>({
-      username: '',
-      password: '',
+      username: 'lengzq',
+      password: 'abc123',
       remember: true
     })
-    const onFinish = (values: any) => {
-      console.log('Success:', values)
+    const onFinish = () => {
+      console.log('onLogin')
+      axios({
+        method: 'post',
+        url: 'login',
+        data: formState,
+        transformRequest: [function (data) {
+          let ret = ''
+          for (const it in data) {
+            ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+          }
+          return ret
+        }],
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      })
+        .then(function (response) {
+          console.log(response)
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
     }
-
     const onFinishFailed = (errorInfo: never) => {
       console.log('Failed:', errorInfo)
     }
@@ -95,7 +123,8 @@ export default defineComponent({
       onFinish,
       onFinishFailed,
       disabled,
-      loginLayout
+      loginLayout,
+      data
     }
   }
 })
@@ -114,7 +143,6 @@ export default defineComponent({
   transform: translateX(-50%) translateY(-36%);
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
-
 #login-container .login-form {
   max-width: 300px;
   width: 248px;

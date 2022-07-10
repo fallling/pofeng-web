@@ -43,7 +43,6 @@
 
 import { defineComponent, ref } from 'vue'
 import HeaderBar from '@/components/HeaderBar.vue'
-import { SearchOutlined } from '@ant-design/icons-vue'
 
 const followUserColumns = [
   {
