@@ -175,7 +175,7 @@ export default defineComponent({
   font-weight:bold;
   border: none;
   resize:none;
-} >>> #infoTitle .ant-input:focus {
+} /depp/ #infoTitle .ant-input:focus {
    border: none;
    border-bottom: 1px solid white !important;
    box-shadow: none;

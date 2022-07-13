@@ -62,7 +62,9 @@
 <script lang="ts">
 import { defineComponent, reactive, computed, ref } from 'vue'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
-import axios from 'axios'
+import { login } from '@/axios/api'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
 interface FormState {
   username: string;
@@ -78,34 +80,21 @@ export default defineComponent({
   },
   setup () {
     const data = ref('')
+    const router = useRouter()
+    const store = useStore()
     const formState = reactive<FormState>({
       username: 'lengzq',
       password: 'abc123',
       remember: true
     })
-    const onFinish = () => {
+    const onFinish = async () => {
       console.log('onLogin')
-      axios({
-        method: 'post',
-        url: 'login',
-        data: formState,
-        transformRequest: [function (data) {
-          let ret = ''
-          for (const it in data) {
-            ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-          }
-          return ret
-        }],
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
+      await login(formState).then(resp => {
+        console.log(resp)
+        store.commit('saveUser', resp.data.object)
+        store.commit('saveToken', resp.headers.token)
+        router.push('/')
       })
-        .then(function (response) {
-          console.log(response)
-        })
-        .catch(function (error) {
-          console.log(error)
-        })
     }
     const onFinishFailed = (errorInfo: never) => {
       console.log('Failed:', errorInfo)
@@ -147,7 +136,7 @@ export default defineComponent({
   max-width: 300px;
   width: 248px;
 }
-#login-container .login-form >>> .ant-form-item {
+#login-container .login-form /deep/ .ant-form-item {
   margin-bottom: 12px;
 }
 #login-container .login-form-wrap {

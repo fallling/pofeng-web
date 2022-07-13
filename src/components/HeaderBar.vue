@@ -24,12 +24,9 @@
           <BellOutlined />
         </a-badge>
       </a>
-      <span :style="{ margin: '0 10px' }"> 欢迎您，破风 </span>
+      <span :style="{ margin: '0 10px' }"> 欢迎您 {{ user.nickName }} </span>
       <a-dropdown placement="bottomRight">
-        <a-avatar>
-          <template #icon>
-            <UserOutlined />
-          </template>
+        <a-avatar :src="user.avatar">
         </a-avatar>
         <template #overlay>
           <a-menu>
@@ -47,19 +44,24 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, onMounted, ref } from 'vue'
 import { BellOutlined, UserOutlined } from '@ant-design/icons-vue'
 import { useRouter } from 'vue-router'
 import { MenuProps } from 'ant-design-vue'
+import { useStore } from 'vuex'
 
 export default defineComponent({
   name: 'HeaderBar',
   components: {
-    BellOutlined,
-    UserOutlined
+    BellOutlined
   },
   setup () {
     const router = useRouter()
+    const store = useStore()
+    const user = ref({
+      nickName: store.getters.nickName,
+      avatar: store.getters.avatar
+    })
     const currentMain = ref([router.currentRoute.value.name])
     const headerMenuHandleClick: MenuProps['onClick'] = (e) => {
       console.log('headerMenu click', e)
@@ -69,7 +71,8 @@ export default defineComponent({
     }
     return {
       currentMain,
-      headerMenuHandleClick
+      headerMenuHandleClick,
+      user
     }
   }
 })

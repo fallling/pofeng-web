@@ -43,7 +43,7 @@
                 </a-dropdown>
               </div>
             </template>
-            <a-table :showHeader="false" :pagination="false" :columns="columns" :data-source="data">
+            <a-table :showHeader="false" :pagination="false" :columns="columns" :data-source="resentData">
               <template #bodyCell="{ column, record, text }">
 
                 <template v-if="column.key === 'articleTitle'">
@@ -51,7 +51,7 @@
                 </template>
 
                 <template v-if="column.key === 'ascription'">
-                  <span><a>{{ record.createUser }}</a> / <a>{{ record.baseName }}</a></span>
+                  <span><a>{{ record.nickName }}</a> / <a>{{ record.baseName }}</a></span>
                 </template>
 
                 <template v-if="column.key === 'action'">
@@ -60,9 +60,9 @@
                       <p @click.prevent><MoreOutlined/></p>
                       <template #overlay>
                         <a-menu>
-                          <a-menu-item><a><EditOutlined/> 编辑</a></a-menu-item>
-                          <a-menu-item><a><LinkOutlined/> 设为快捷入口</a></a-menu-item>
-                          <a-menu-item><a><DeleteOutlined/> 移除记录</a></a-menu-item>
+                          <a-menu-item><a> <EditOutlined/> 编辑 </a></a-menu-item>
+                          <a-menu-item><a> <LinkOutlined/> 设为快捷入口 </a></a-menu-item>
+                          <a-menu-item><a> <DeleteOutlined/> 移除记录 </a></a-menu-item>
                         </a-menu>
                       </template>
                   </a-dropdown>
@@ -92,22 +92,49 @@
     </a-col>
     </a-row>
 
-    <a-modal v-model:visible="ArticleVisible" title="新建文档" @ok="ArticleModalOK" >
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-      <p>Some contents...</p>
+    <a-modal v-model:visible="ArticleVisible" title="新建文档" @ok="ArticleModalOK" :footer="null">
+      <p>请选择所属库</p>
+      <a-list item-layout="horizontal" :data-source="baseData">
+        <template #renderItem="{ item }">
+          <a-list-item>
+            <a-list-item-meta>
+              <template #title>
+                <a>{{ item.baseName }}</a>
+              </template>
+            </a-list-item-meta>
+          </a-list-item>
+        </template>
+      </a-list>
     </a-modal>
-    <a-modal v-model:visible="ExcelVisible" title="新建表格" @ok="ExcelModalOK">
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-      <p>Some contents...</p>
+    <a-modal v-model:visible="ExcelVisible" title="新建表格" @ok="ExcelModalOK" :footer="null">
+      <p>请选择所属库</p>
+      <a-list item-layout="horizontal" :data-source="baseData">
+        <template #renderItem="{ item }">
+          <a-list-item>
+            <a-list-item-meta>
+              <template #title>
+                <a>{{ item.baseName }}</a>
+              </template>
+            </a-list-item-meta>
+          </a-list-item>
+        </template>
+      </a-list>
     </a-modal>
-    <a-modal v-model:visible="DrawVisible" title="新建画板" @ok="DrawModalOK">
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-      <p>Some contents...</p>
+    <a-modal v-model:visible="DrawVisible" title="新建画板" @ok="DrawModalOK" :footer="null">
+      <p>请选择所属库</p>
+      <a-list item-layout="horizontal" :data-source="baseData">
+        <template #renderItem="{ item }">
+          <a-list-item>
+            <a-list-item-meta>
+              <template #title>
+                <a>{{ item.baseName }}</a>
+              </template>
+            </a-list-item-meta>
+          </a-list-item>
+        </template>
+      </a-list>
     </a-modal>
-    <a-modal v-model:visible="QuickVisible" title="添加快捷入口" @ok="DrawModalOK">
+    <a-modal v-model:visible="QuickVisible" title="添加快捷入口" @ok="DrawModalOK" :footer="null">
       <a-form layout="vertical">
         <a-form-item label="标题">
           <a-input placeholder="输入标题，或关键词搜索我的知识库" ></a-input>
@@ -122,17 +149,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, onMounted, ref } from 'vue'
 import { PlusOutlined, DownOutlined, MoreOutlined, EditOutlined, LinkOutlined, DeleteOutlined } from '@ant-design/icons-vue'
+import { getArticle, getBase } from '@/axios/api'
+import { useStore } from 'vuex'
 const columns = [
   { dataIndex: 'articleTitle', key: 'articleTitle' },
   { dataIndex: 'ascription', key: 'ascription' },
   { dataIndex: 'lastEditTime', key: 'lastEditTime' },
   { key: 'action' }
-]
-const data = [
-  { articleId: '1', articleTitle: '新建文档', createUser: '破风', baseName: '吾有装潢之', lastEditTime: '651896' },
-  { articleId: '2', articleTitle: '新建文档', createUser: '破风', baseName: '吾有装潢之', lastEditTime: '651896' }
 ]
 
 export default defineComponent({
@@ -146,13 +171,19 @@ export default defineComponent({
     DeleteOutlined
   },
   setup () {
+    const store = useStore()
+    const resentData = ref([])
+    const baseData = ref([])
     const ArticleVisible = ref<boolean>(false)
     const ExcelVisible = ref<boolean>(false)
     const DrawVisible = ref<boolean>(false)
     const QuickVisible = ref<boolean>(false)
-
     const showArticleModal = () => {
       ArticleVisible.value = true
+      getBase(store.getters.userId).then(resp => {
+        console.log(resp)
+        baseData.value = resp.data.records
+      })
     }
     const ArticleModalOK = () => {
       ArticleVisible.value = false
@@ -175,8 +206,18 @@ export default defineComponent({
     const QuickModalOK = () => {
       QuickVisible.value = false
     }
+
+    onMounted(() => {
+      console.log('mounted')
+      getArticle(store.getters.userId).then(resp => {
+        console.log(resp)
+        resentData.value = resp.data.records
+        console.log(resentData)
+      })
+    })
     return {
-      data,
+      resentData,
+      baseData,
       columns,
       ArticleVisible,
       ExcelVisible,

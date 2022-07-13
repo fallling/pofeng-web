@@ -75,7 +75,7 @@ export default defineComponent({
   height: 100vh;
   padding: 20px 12px;
   border-right: #eeeeee solid 1px;
-} >>> .ant-list-split .ant-list-item{
+} /deep/ .ant-list-split .ant-list-item{
     border: 0;
   }
 .meta-card{
