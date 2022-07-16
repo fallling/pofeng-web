@@ -3,7 +3,7 @@ import axios from './index'
 export const login = (params?: any) => {
   return axios({
     method: 'post',
-    url: 'http://localhost:8082/login',
+    url: 'login',
     data: params,
     transformRequest: [function (data) {
       let ret = ''
@@ -20,7 +20,7 @@ export const login = (params?: any) => {
 export const getArticle = (params?: any) => {
   return axios({
     method: 'get',
-    url: 'http://localhost:8082/article',
+    url: 'article',
     params: {
       userId: params
     }
@@ -29,7 +29,7 @@ export const getArticle = (params?: any) => {
 export const getBase = (params?: any) => {
   return axios({
     method: 'get',
-    url: 'http://localhost:8082/knowBase',
+    url: 'knowBase',
     params: {
       userId: params
     }
@@ -39,7 +39,7 @@ export const getBase = (params?: any) => {
 export const getSchedules = (params?: any) => {
   return axios({
     method: 'get',
-    url: 'http://localhost:8082/calendar',
+    url: 'calendar',
     params: {
       userId: params
     }

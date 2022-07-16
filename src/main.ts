@@ -9,8 +9,8 @@ import 'ant-design-vue/dist/antd.css'
 import axios from 'axios'
 
 const app = createApp(App)
-app.config.globalProperties.$axios = axios
-axios.defaults.baseURL = 'http://localhost:8082/'
+app.config.globalProperties.$http = axios
+axios.defaults.baseURL = '/'
 
 app.use(store)
 app.use(router)

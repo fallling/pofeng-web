@@ -65,6 +65,7 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 import { login } from '@/axios/api'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import axios from 'axios'
 
 interface FormState {
   username: string;
@@ -93,7 +94,7 @@ export default defineComponent({
         console.log(resp)
         store.commit('saveUser', resp.data.object)
         store.commit('saveToken', resp.headers.token)
-        router.push('/')
+        router.push('/home')
       })
     }
     const onFinishFailed = (errorInfo: never) => {

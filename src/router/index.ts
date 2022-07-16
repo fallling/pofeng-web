@@ -10,6 +10,9 @@ import HomePageView from '../views/HomePageView.vue'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
+    redirect: '/login'
+  }, {
+    path: '/home',
     name: 'home',
     component: HomeView
   }, {
