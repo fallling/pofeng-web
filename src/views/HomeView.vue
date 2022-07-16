@@ -88,7 +88,6 @@ export default defineComponent({
     BellOutlined
   },
   setup () {
-    const route = useRoute()
     const router = useRouter()
     const currentMain = ref<string[]>(['home'])
     const sideMenuSelectedKeys = ref<string[]>(['WorkBenchView'])

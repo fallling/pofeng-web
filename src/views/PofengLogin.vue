@@ -65,7 +65,6 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 import { login } from '@/axios/api'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import axios from 'axios'
 
 interface FormState {
   username: string;

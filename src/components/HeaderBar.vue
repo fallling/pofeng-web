@@ -44,8 +44,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue'
-import { BellOutlined, UserOutlined } from '@ant-design/icons-vue'
+import { defineComponent, ref } from 'vue'
+import { BellOutlined } from '@ant-design/icons-vue'
 import { useRouter } from 'vue-router'
 import { MenuProps } from 'ant-design-vue'
 import { useStore } from 'vuex'

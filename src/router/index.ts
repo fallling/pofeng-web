@@ -6,6 +6,7 @@ import SpaceView from '../views/SpaceView.vue'
 import FollowsView from '../views/subView/FollowsView.vue'
 import NotificationsView from '../views/NotificationsView.vue'
 import HomePageView from '../views/HomePageView.vue'
+import DocumentView from '@/views/document/DocumentView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -42,6 +43,10 @@ const routes: Array<RouteRecordRaw> = [
     path: '/homepage',
     name: 'homepage',
     component: HomePageView
+  }, {
+    path: '/document',
+    name: 'document',
+    component: DocumentView
   }
 ]
 
