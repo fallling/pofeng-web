@@ -22,10 +22,10 @@
         <span style="margin-left: 20px">团队知识库</span>
       </div>
       <a-table :columns="baseListColumns" :data-source="baseList" rowKey="baseId">
-        <template #bodyCell="{ column, record }">
+        <template #bodyCell="{ column, text, record }">
 
           <template v-if="column.key === 'baseName'">
-            <a style="color: black">{{ record.text }}</a>
+            <a style="color: black" @click="turnToArticles(record.baseId)">{{ text }}</a>
           </template>
 
           <template v-else-if="column.key === 'action'">
@@ -53,10 +53,10 @@
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol" style="width: 380px;margin: auto">
           <a-form-item label="知识库名称">
-            <a-input v-model="newBase.baseName" placeholder="如：图片存储优化"></a-input>
+            <a-input v-model:value="newBase.baseName" placeholder="如：图片存储优化"></a-input>
           </a-form-item>
           <a-form-item label="简介">
-            <a-textarea v-model="newBase.baseIntro" placeholder="如：图片存储优化方案" :auto-size="{ minRows: 3}"/>
+            <a-textarea v-model:value="newBase.baseIntro" placeholder="如：图片存储优化方案" :auto-size="{ minRows: 3}"/>
           </a-form-item>
         </a-form>
       </div>
@@ -65,8 +65,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
+import { defineComponent, onMounted, reactive, ref } from 'vue'
 import { MoreOutlined } from '@ant-design/icons-vue'
+import { createBase, getBase, getBaseList } from '@/axios/api'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import dayjs from 'dayjs'
+
+interface Base {
+  userId: string,
+  userName: string,
+  baseId: string,
+  baseName: string,
+  baseIntro: string,
+  createTime: string
+}
 
 const labelCol = { xs: { span: 24 }, sm: { span: 5 } }
 const wrapperCol = { xs: { span: 24 }, sm: { span: 18 } }
@@ -81,40 +94,72 @@ const baseListColumns = [
   { title: '', key: 'action' }
 ]
 
-const baseList = [
-  {
-    baseName: 'baseName',
-    createTime: 'createTime'
-  }
-]
 export default defineComponent({
   name: 'KnowledgeBaseView',
   components: {
     MoreOutlined
   },
   setup () {
+    const store = useStore()
+    const router = useRouter()
     const modalVisible = ref<boolean>(false)
     const createKnobConfirmLoading = ref<boolean>(false)
-    const newBase = reactive({
-      baseName: 'baseName',
-      baseIntro: 'baseIntro'
+    const baseList = ref([
+      {
+        baseName: '',
+        createTime: ''
+      }
+    ])
+    const newBase = ref({
+      baseName: '',
+      createTime: '',
+      baseIntro: '',
+      userId: ''
     })
     const showModal = () => {
       modalVisible.value = true
     }
-
-    const modalOk = () => {
-      modalVisible.value = false
+    const modalOk = async () => {
+      console.log('modalOk')
+      newBase.value.createTime = dayjs().format('YYYY-MM-DD HH:mm:ss')
+      newBase.value.userId = store.getters.userId
+      await createBase(newBase.value).then(resp => {
+        console.log(resp)
+        baseList.value.push({
+          baseName: newBase.value.baseName,
+          createTime: newBase.value.createTime
+        })
+        modalVisible.value = false
+      })
     }
     const modalCancel = () => {
       modalVisible.value = false
     }
+
+    const turnToArticles = (baseId: string) => {
+      console.log('turnToArticles', baseId)
+      router.push(
+        {
+          path: '/documents',
+          query: {
+            baseId: baseId
+          }
+        }
+      )
+    }
+    onMounted(() => {
+      getBaseList(store.getters.userId).then(resp => {
+        console.log(resp)
+        baseList.value = resp.data.records
+      })
+    })
     return {
       modalVisible,
       createKnobConfirmLoading,
       showModal,
       modalOk,
       modalCancel,
+      turnToArticles,
       labelCol,
       wrapperCol,
       newBase,

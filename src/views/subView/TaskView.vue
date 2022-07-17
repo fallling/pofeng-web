@@ -6,7 +6,7 @@
         <a-list :data-source="taskList">
          <template #renderItem="{ item }">
             <a-list-item v-if="item.status === '进行中'" class="TaskListItem">
-              {{ item.listTitle }}
+              <a @click="showInfo(item)">{{ item.listTitle }}</a>
             </a-list-item>
          </template>
         </a-list>
@@ -14,8 +14,8 @@
 
         <a-list :data-source="taskList">
           <template #renderItem="{ item }">
-            <a-list-item v-if="item.status === '已完成'" class="TaskListItem">
-              {{ item.listTitle }}
+            <a-list-item v-if="item.status === '已完成'" class="TaskListItem" style="text-decoration: line-through">
+              <a @click="showInfo(item)">{{ item.listTitle }}</a>
             </a-list-item>
           </template>
         </a-list>
@@ -33,24 +33,36 @@
       collapsedWidth="0"
       width="300px"
       style="background-color: #ffffff; border-radius: 10px; margin-left: 20px; display: block">
-      <a-form :model="taskInfo" class="taskInfo-wrapper">
+
+      <a-form
+        :model="taskInfo"
+        onchange=""
+        class="taskInfo-wrapper">
         <a-form-item>
           <a-textarea id="infoTitle"
                       :auto-size="{ minRows: 1, maxRows: 3 }"
-                      v-model="taskInfo.listTitle"
+                      v-model:value="taskInfo.listTitle"
                       placeholder="标题"/>
         </a-form-item>
 
         <a-form-item>
-          <a-date-picker v-model="taskInfo.alarm" show-time placeholder="提醒我"/>
+          <a-date-picker
+            valueFormat="YYYY-MM-DD HH:mm:ss"
+            v-model:value="taskInfo.alarm"
+            show-time
+            placeholder="提醒我"/>
         </a-form-item>
 
         <a-form-item>
-          <a-date-picker v-model="taskInfo.deadline" show-time placeholder="添加截止日期"/>
+          <a-date-picker
+            valueFormat="YYYY-MM-DD HH:mm:ss"
+            v-model:value="taskInfo.deadline"
+            show-time
+            placeholder="添加截止日期"/>
         </a-form-item>
 
         <a-form-item >
-          <a-select v-model="taskInfo.listRepeat" placeholder="重复" style="width: 120px">
+          <a-select v-model:value="taskInfo.listRepeat" placeholder="重复" style="width: 120px">
             <a-select-option value="0">不重复</a-select-option>
             <a-select-option value="1">每天</a-select-option>
             <a-select-option value="2">每周</a-select-option>
@@ -66,11 +78,11 @@
           </a-upload>
         </a-form-item>
         <a-form-item>
-          <a-textarea v-model="taskInfo.remark" placeholder="添加备注" :rows="4"/>
+          <a-textarea v-model:value="taskInfo.remark" placeholder="添加备注" :rows="4"/>
         </a-form-item>
 
         <a-form-item style="margin-top: 25px; text-align: center;">
-          <a-button> 完成任务 </a-button>
+          <a-button @click="completeTask"> 完成任务 </a-button>
           <a-button shape="circle" style="border: 0; margin-left: 50px">
             <DeleteOutlined />
           </a-button>
@@ -83,8 +95,9 @@
 
 <script lang="ts">
 
-import { defineComponent, reactive, ref, UnwrapRef } from 'vue'
+import { defineComponent, onMounted, ref } from 'vue'
 import { DeleteOutlined } from '@ant-design/icons-vue'
+import { getTasks, updateTask } from '@/axios/api'
 
 interface Task {
   listId: string,
@@ -97,29 +110,6 @@ interface Task {
   status: string
 }
 
-const taskList: Task[] = [
-  {
-    listId: 'listId',
-    listTitle: 'listTitle',
-    alarm: 'alarm',
-    deadline: 'deadline',
-    listRepeat: 'listRepeat',
-    files: 'files',
-    remark: 'remark',
-    status: '进行中'
-  },
-  {
-    listId: 'listId',
-    listTitle: '已完成',
-    alarm: 'alarm',
-    deadline: 'deadline',
-    listRepeat: 'listRepeat',
-    files: 'files',
-    remark: 'remark',
-    status: '已完成'
-  }
-]
-
 export default defineComponent({
   name: 'TaskView',
   components: {
@@ -127,8 +117,9 @@ export default defineComponent({
   },
   setup () {
     const newTaskTitle = ref('')
-    const collapsed = ref<boolean>(false)
-    const taskInfo: UnwrapRef<Task> = reactive({
+    const taskList = ref<Task[]>()
+    const collapsed = ref<boolean>(true)
+    const taskInfo = ref<Task>({
       listId: '',
       listTitle: '',
       alarm: '',
@@ -138,11 +129,34 @@ export default defineComponent({
       remark: '',
       status: ''
     })
+    const showInfo = (item : Task) => {
+      console.log('showInfo')
+      collapsed.value = false
+      taskInfo.value = item
+    }
+
+    const completeTask = async () => {
+      console.log('completeTask', taskInfo)
+      taskInfo.value.status = '已完成'
+      await updateTask(taskInfo.value).then(resp => {
+        console.log(resp)
+        collapsed.value = false
+      })
+    }
+
+    onMounted(() => {
+      getTasks(taskInfo.value).then(resp => {
+        console.log(resp)
+        taskList.value = resp.data.records
+      })
+    })
     return {
       taskList,
       newTaskTitle,
       collapsed,
-      taskInfo
+      taskInfo,
+      showInfo,
+      completeTask
     }
   }
 })
@@ -166,6 +180,7 @@ export default defineComponent({
   border-radius: 23px;
   background: white;
   padding-left: 32px;
+  margin: 9px auto;
 }
 
 #infoTitle{

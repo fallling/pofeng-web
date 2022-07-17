@@ -303,6 +303,9 @@ export default defineComponent({
 <style scoped>
 
 #container {
+  height: 100%;
+  background: url('https://s1.ax1x.com/2022/04/23/LfYxtP.jpg') no-repeat bottom center;
+  background-size: cover;
   padding: 24px 32px;
 }
 

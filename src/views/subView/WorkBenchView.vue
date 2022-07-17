@@ -1,6 +1,6 @@
 <template>
   <div id="container">
-    <a-row :gutter="36" type="flex" style="">
+    <a-row type="flex">
 
       <a-col flex="auto">
         <div class="content-wrapper">
@@ -151,7 +151,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue'
 import { PlusOutlined, DownOutlined, MoreOutlined, EditOutlined, LinkOutlined, DeleteOutlined } from '@ant-design/icons-vue'
-import { getArticle, getBase } from '@/axios/api'
+import { getArticles, getBaseList } from '@/axios/api'
 import { useStore } from 'vuex'
 const columns = [
   { dataIndex: 'articleTitle', key: 'articleTitle' },
@@ -180,7 +180,7 @@ export default defineComponent({
     const QuickVisible = ref<boolean>(false)
     const showArticleModal = () => {
       ArticleVisible.value = true
-      getBase(store.getters.userId).then(resp => {
+      getBaseList(store.getters.userId).then(resp => {
         console.log(resp)
         baseData.value = resp.data.records
       })
@@ -209,7 +209,7 @@ export default defineComponent({
 
     onMounted(() => {
       console.log('mounted')
-      getArticle(store.getters.userId).then(resp => {
+      getArticles(store.getters.userId).then(resp => {
         console.log(resp)
         resentData.value = resp.data.records
         console.log(resentData)
@@ -238,7 +238,7 @@ export default defineComponent({
 
 <style scoped>
 #container {
-  padding: 24px 32px;
+
 }
 
 .dropdown-wrapper {

@@ -7,6 +7,8 @@ import FollowsView from '../views/subView/FollowsView.vue'
 import NotificationsView from '../views/NotificationsView.vue'
 import HomePageView from '../views/HomePageView.vue'
 import DocumentView from '@/views/document/DocumentView.vue'
+import WebSocketTest from '@/views/document/WebSocketTest.vue'
+import DocumentsView from '@/views/document/DocumentsView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -47,6 +49,14 @@ const routes: Array<RouteRecordRaw> = [
     path: '/document',
     name: 'document',
     component: DocumentView
+  }, {
+    path: '/test',
+    name: 'test',
+    component: WebSocketTest
+  }, {
+    path: '/documents',
+    name: 'documents',
+    component: DocumentsView
   }
 ]
 

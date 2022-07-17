@@ -4,10 +4,10 @@
       <HeaderBar></HeaderBar>
     </a-layout-header>
 
-    <a-layout>
+    <a-layout style="background: white">
       <a-layout-sider
         width="256px"
-        :style="{ background: '#fff' }">
+        :style="{ background: '#fff', borderRight: '#eeeeee 1px solid' }">
         <a-menu
           id="side-menu"
           v-model:selectedKeys="sideMenuSelectedKeys"
@@ -40,7 +40,7 @@
       <a-layout class="content-wrapper">
         <a-layout-content class="content">
           <keep-alive>
-            <component v-bind:is="currentTabComponent"></component>
+            <component @turnTo="turnToPage" :arg="arg" v-bind:is="currentTabComponent"></component>
           </keep-alive>
         </a-layout-content>
 
@@ -66,6 +66,9 @@ import TaskView from '@/views/subView/TaskView.vue'
 import TeamView from '@/views/subView/TeamView.vue'
 import KnowledgeBaseView from '@/views/subView/KnowledgeBaseView.vue'
 import HeaderBar from '@/components/HeaderBar.vue'
+
+import TeamHomeView from '@/views/team/TeamHomeView.vue'
+
 export default defineComponent({
   name: 'HomeView',
   components: {
@@ -77,6 +80,7 @@ export default defineComponent({
     TaskView,
     TeamView,
     KnowledgeBaseView,
+    TeamHomeView,
     UserOutlined,
     LaptopOutlined,
     CalendarOutlined,
@@ -89,6 +93,7 @@ export default defineComponent({
   },
   setup () {
     const router = useRouter()
+    const arg = ref()
     const currentMain = ref<string[]>(['home'])
     const sideMenuSelectedKeys = ref<string[]>(['WorkBenchView'])
     const currentTabComponent = ref<string>('WorkBenchView')
@@ -102,12 +107,20 @@ export default defineComponent({
       currentTabComponent.value = e.key.toString()
       console.log('sideMenu click', e)
     }
+
+    const turnToPage = (data: any) => {
+      console.log('收到消息', data)
+      arg.value = data[1]
+      currentTabComponent.value = data[0]
+    }
     return {
       currentMain,
       headerMenuHandleClick,
       sideMenuHandleClick,
       sideMenuSelectedKeys,
-      currentTabComponent
+      currentTabComponent,
+      turnToPage,
+      arg
     }
   }
 })
@@ -123,6 +136,7 @@ export default defineComponent({
   top: 0;
   z-index: 100;
   width: 100%;
+  border-bottom: #eeeeee 1px solid;
 }
 
 #side-menu {
@@ -147,6 +161,7 @@ export default defineComponent({
 /*  padding: 24px 32px;*/
   margin: 0;
   height: 100vh;
+  background: white;
 }
 
 .footer {

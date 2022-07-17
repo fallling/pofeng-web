@@ -87,6 +87,7 @@ export default defineComponent({
   top: 0;
   z-index: 100;
   width: 100%;
+  border-bottom: #eeeeee 1px solid;
 }
 .header-logo {
   position: absolute;

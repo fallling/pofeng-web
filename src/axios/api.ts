@@ -17,7 +17,7 @@ export const login = (params?: any) => {
     }
   })
 }
-export const getArticle = (params?: any) => {
+export const getArticles = (params?: any) => {
   return axios({
     method: 'get',
     url: 'article',
@@ -26,12 +26,36 @@ export const getArticle = (params?: any) => {
     }
   })
 }
-export const getBase = (params?: any) => {
+export const getArticle = (params?: any) => {
+  return axios({
+    method: 'get',
+    url: 'article/' + `${params}`
+  })
+}
+
+export const getBaseList = (params?: any) => {
   return axios({
     method: 'get',
     url: 'knowBase',
     params: {
       userId: params
+    }
+  })
+}
+
+export const getBase = (params?: any) => {
+  return axios({
+    method: 'get',
+    url: 'knowBase/' + `${params}`
+  })
+}
+export const createBase = (params?: any) => {
+  return axios({
+    method: 'post',
+    url: 'knowBase',
+    data: params,
+    headers: {
+      'Content-Type': 'application/json'
     }
   })
 }
@@ -49,7 +73,7 @@ export const getSchedules = (params?: any) => {
 export const postSchedule = (params?: any) => {
   return axios({
     method: 'post',
-    url: 'http://localhost:8082/calendar',
+    url: 'calendar',
     data: params,
     headers: {
       'Content-Type': 'application/json'
@@ -59,7 +83,77 @@ export const postSchedule = (params?: any) => {
 export const putSchedule = (params?: any) => {
   return axios({
     method: 'put',
-    url: 'http://localhost:8082/calendar',
+    url: 'calendar',
+    data: params,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+}
+
+export const getTasks = (params?: any) => {
+  return axios({
+    method: 'get',
+    url: 'todoList',
+    data: params,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+}
+export const updateTask = (params?: any) => {
+  return axios({
+    method: 'put',
+    url: 'todoList',
+    data: params,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+}
+
+export const completeTask = (params?: any) => {
+  return axios({
+    method: 'put',
+    url: 'todoList',
+    data: params,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+}
+
+export const getTeams = (params?: any) => {
+  return axios({
+    method: 'get',
+    url: 'team',
+    data: params,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+}
+export const getTeam = (params?: any) => {
+  return axios({
+    method: 'get',
+    url: 'team/' + `${params}`
+  })
+}
+
+export const getFetchUser = (params?: any) => {
+  return axios({
+    method: 'get',
+    url: 'user/fuzzyQuery',
+    params: {
+      arg: params
+    }
+  })
+}
+
+export const createTeam = (params?: any) => {
+  return axios({
+    method: 'post',
+    url: 'team',
     data: params,
     headers: {
       'Content-Type': 'application/json'

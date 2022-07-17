@@ -19,10 +19,10 @@
 
       <a-table :columns="listColumns" :data-source="teamList" rowKey="teamId">
 
-        <template #bodyCell="{ column, text }">
+        <template #bodyCell="{ column, text, record }">
 
           <template v-if="column.key === 'teamName'">
-            <a style="color:black">{{ text }}</a>
+            <a style="color:black" @click="turnToTeamHome(record.teamId)">{{ text }}</a>
           </template>
 
           <template v-else-if="column.key === 'action'">
@@ -38,17 +38,33 @@
       @ok="modalOk" @cancel="modalCancel">
       <a-form :form="newTeam">
         <a-form-item label="名称">
-          <a-input v-model="newTeam.teamName" placeholder="如：知识库项目组"></a-input>
+          <a-input v-model:value="newTeam.teamName" placeholder="如：知识库项目组"></a-input>
         </a-form-item>
 
         <a-form-item label="简介">
           <a-textarea
-            v-model="newTeam.teamIntro"
+            v-model:value="newTeam.teamIntro"
             placeholder="如：知识库项目组成员协作阵地"
             :auto-size="{ minRows: 3, maxRows: 5 }"/>
         </a-form-item>
 
         <a-form-item label="添加成员">
+          <a-select mode="multiple"
+                    label-in-value
+                    v-model:value="newTeam.members"
+                    placeholder="输入用户id搜索"
+                    :labelInValue="false"
+                    style="width: 100%"
+                    :filter-option="false"
+                    :not-found-content="fetching ? undefined : null"
+                    @search="fetchUser"
+                    :options="data"
+                    >
+            <template v-if="fetching" #notFoundContent>
+              <a-spin size="small"/>
+            </template>
+
+          </a-select>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -56,7 +72,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
+import debounce from 'lodash/debounce'
+import { defineComponent, onMounted, reactive, ref, toRefs, watch } from 'vue'
+import { createTeam, getFetchUser, getTeams } from '@/axios/api'
+import router from '@/router'
+import { useStore } from 'vuex'
 interface Team {
   teamId: string
   teamName: string
@@ -81,39 +101,81 @@ export default defineComponent({
   components: {
 
   },
-  setup () {
+  setup (props, ctx) {
+    const store = useStore()
     const modalVisible = ref<boolean>(false)
     const modalConfirmLoading = ref<boolean>(false)
     const newTeam = reactive({
       teamName: '',
       teamIntro: '',
-      members: []
+      members: [],
+      createUser: ''
     })
-    const teamList: Team[] = [
-      {
-        teamId: 'teamId',
-        teamName: 'teamName',
-        teamIntro: 'teamIntro',
-        teamMembers: 'teamMembers',
-        createUser: 'createUser',
-        createTime: 'createTime'
-      }
-    ]
+
+    const state = reactive({
+      data: [],
+      value: [],
+      fetching: false
+    })
+
+    const teamList = ref<Team[]>()
     const showModal = () => {
       modalVisible.value = true
     }
-    const modalOk = () => {
-      modalVisible.value = false
+    // 创建团队
+    const modalOk = async () => {
+      newTeam.createUser = store.getters.userId
+      await createTeam(newTeam).then(resp => {
+        console.log('创建团队', resp)
+        modalVisible.value = false
+      })
     }
     const modalCancel = () => {
       modalVisible.value = false
     }
+    // 跳转到TeamHome
+    const turnToTeamHome = (teamId: string) => {
+      console.log('turnToTeamHome', teamId)
+      ctx.emit('turnTo', ['TeamHomeView', teamId])
+    }
+    // 搜索用户
+    const fetchUser = debounce(value => {
+      console.log('搜索用户', value)
+      state.data = []
+      state.fetching = true
+      getFetchUser(value).then(resp => {
+        console.log('结果', resp)
+        const data = resp.data.records.map(
+          (user: any) => ({
+            text: `${user.nickName}(${user.username})`,
+            value: user.nickName
+          }))
+        state.data = data
+        state.fetching = false
+      })
+    }, 300)
+
+    // 监听state的变化
+    watch(state.value, () => {
+      state.data = []
+      state.fetching = false
+    })
+
+    onMounted(() => {
+      getTeams().then(resp => {
+        console.log(resp)
+        teamList.value = resp.data.records
+      })
+    })
     return {
       modalVisible,
       modalConfirmLoading,
       showModal,
       modalOk,
       modalCancel,
+      turnToTeamHome,
+      ...toRefs(state),
+      fetchUser,
       newTeam,
       CommonlyUseData,
       listColumns,
