@@ -1,199 +1,194 @@
 <template>
   <div>
-    <a-layout style="height: 100%">
-      <a-layout-sider
-        v-model:collapsed="collapsed"
-        collapsible
-        collapsedWidth="0"
-        width="265px"
-        style="background: white">
-        <div class="header-logo">
-          <img height="64"  style="vertical-align:top;" alt="logo" src="@/assets/pofengLogo.png">
-        </div>
-        <a-menu
-          v-model:selectedKeys="selectedKeys"
-          mode="inline"
-          theme="light">
-          <a-menu-item key="1">菜单一</a-menu-item>
-        </a-menu>
-      </a-layout-sider>
+    <a-layout>
+      <a-layout-header id="header-wrapper">
+        <HeaderBar></HeaderBar>
+      </a-layout-header>
+      <div id="toolbar"></div>
+      <a-layout-content>
+        <a-layout style="height: 100%">
+          <a-layout-sider
+            v-model:collapsed="collapsed"
+            :trigger="null"
+            collapsible
+            collapsedWidth="0"
+            width="265px"
+            style="background: white; border-right: #eeeeee solid 1px">
 
-      <a-lyaout-content :style="{width: '100%', background: 'white'}">
-        <div>
-          <div id="header-wrapper">
-            <div id="toolbar"></div>
+            <div class="trigger"
+                 @click="() => (collapsed = !collapsed)">
+              <RightOutlined v-if="collapsed"/>
+              <LeftOutlined v-else/>
+            </div>
 
-          </div>
-          <div id="user-info"></div>
-          <div id="content-wrapper">
-            <div ref="editorContainer"></div>
-          </div>
-        </div>
+            <a-menu
+              v-model:selectedKeys="selectedKeys"
+              :style="{ marginTop: '64px' }"
+              mode="inline"
+              @click="handleClick"
+              theme="light">
+              <a-menu-item
+                v-for="item in menuList"
+                v-bind:key="item.articleId">{{ item.articleTitle }}</a-menu-item>
+            </a-menu>
+          </a-layout-sider>
 
-      </a-lyaout-content>
+          <a-layout-content :style="{width: '100%', background: 'white'}">
+            <div id="content-wrapper">
+              <a-input
+                v-model:value="article.articleTitle"
+                :bordered="false"
+                placeholder="请输入标题"
+                class="title"
+                size="large"/>
+              <div ref="editorContainer" id="editor"></div>
+            </div>
+          </a-layout-content>
+        </a-layout>
+      </a-layout-content>
     </a-layout>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue'
+import { defineComponent, onMounted, onUnmounted, onUpdated, ref, watch } from 'vue'
 import '@textbus/editor/bundles/textbus.min.css'
-import { MenuProps } from 'ant-design-vue'
-
+import { MenuProps, message } from 'ant-design-vue'
+import { RightOutlined, LeftOutlined } from '@ant-design/icons-vue'
 import {
-  TableComponentSelectionAwarenessDelegate,
   createEditor,
   Toolbar,
-  historyBackTool, historyForwardTool,
+  historyBackTool,
+  historyForwardTool,
   defaultGroupTool,
   componentsTool,
   headingTool,
-  boldTool, italicTool, strikeThroughTool, underlineTool,
-  olTool, ulTool,
-  fontSizeTool, textIndentTool,
-  colorTool, textBackgroundTool,
-  insertParagraphBeforeTool, insertParagraphAfterTool,
+  boldTool,
+  italicTool,
+  strikeThroughTool,
+  underlineTool,
+  olTool,
+  ulTool,
+  fontSizeTool,
+  textIndentTool,
+  colorTool,
+  textBackgroundTool,
+  insertParagraphBeforeTool,
+  insertParagraphAfterTool,
   fontFamilyTool,
-  linkTool, unlinkTool,
+  linkTool,
+  unlinkTool,
   imageTool,
   textAlignTool,
-  tableAddTool, tableRemoveTool,
-  cleanTool
+  tableAddTool,
+  tableRemoveTool,
+  cleanTool,
+  UploadConfig, Editor
 } from '@textbus/editor'
-import { Collaborate, RemoteSelection, collaborateModule, CollaborateSelectionAwarenessDelegate } from '@textbus/collaborate'
-import { WebrtcProvider } from 'y-webrtc'
-export interface User {
-  color: string
-  name: string
-}
 
+import HeaderBar from '@/components/HeaderBar.vue'
+import { getArticle, getArticles, saveArticle } from '@/axios/api'
+import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
+import router from '@/router'
+
+let editor: Editor
+let content: string
 export default defineComponent({
   name: 'DocumentView',
+  components: {
+    HeaderBar,
+    RightOutlined,
+    LeftOutlined
+  },
   setup () {
-    const selectedKeys = ref<string[]>(['1'])
+    const route = useRoute()
+    const store = useStore()
+    const article = ref({
+      articleId: '',
+      articleTitle: '',
+      createUserId: '',
+      lastEditTime: '',
+      content: '',
+      thumbs: '',
+      readNum: ''
+    })
+    const selectedKeys = ref<string[]>([`${route.query.articleId}`])
     const editorContainer = ref()
-
+    const menuList = ref()
     const handleClick: MenuProps['onClick'] = e => {
       console.log('click', e)
+      router.push({
+        path: 'document',
+        query: {
+          articleId: e.key
+        }
+      })
     }
 
     onMounted(() => {
+      getArticles(store.getters.userId).then(resp => {
+        console.log('获取菜单', resp)
+        menuList.value = resp.data.records
+      })
+
+      getArticle(route.query.articleId).then(resp => {
+        console.log('获取文章', resp)
+        article.value = resp.data
+        content = article.value.content
+        console.log('文档', article.value.content)
+      })
+
       const toolbar = new Toolbar(
         [
           [historyBackTool, historyForwardTool],
-          [defaultGroupTool],
-          [componentsTool],
-          [headingTool],
-          [boldTool, italicTool, strikeThroughTool, underlineTool],
-          [olTool, ulTool],
-          [fontSizeTool, textIndentTool],
-          [colorTool, textBackgroundTool],
-          [insertParagraphBeforeTool, insertParagraphAfterTool],
-          [fontFamilyTool],
-          [linkTool, unlinkTool],
-          [imageTool],
-          [textAlignTool],
-          [tableAddTool, tableRemoveTool],
-          [cleanTool]
+          [defaultGroupTool], [componentsTool],
+          [headingTool], [boldTool, italicTool, strikeThroughTool, underlineTool],
+          [olTool, ulTool], [fontSizeTool, textIndentTool],
+          [colorTool, textBackgroundTool], [insertParagraphBeforeTool, insertParagraphAfterTool],
+          [fontFamilyTool], [linkTool, unlinkTool], [imageTool],
+          [textAlignTool], [tableAddTool, tableRemoveTool], [cleanTool]
         ],
         document.getElementById('toolbar') as HTMLElement
       )
       const editor = createEditor({
         theme: 'light',
         placeholder: '请输入内容...',
-        imports: [
-          collaborateModule
-        ],
-        providers: [
-          {
-            provide: CollaborateSelectionAwarenessDelegate, // 提供表格框选协作选区特效支持
-            useClass: TableComponentSelectionAwarenessDelegate
+        content: content,
+        autoHeight: true,
+        uploader (config: UploadConfig) {
+          switch (config.uploadType) {
+            case 'image': {
+              console.log('上传图片')
+              return ''
+            }
+            default : {
+              return ''
+            }
           }
-        ],
+        },
+        onSave () {
+          article.value.content = editor.getContents().content.toString()
+          saveArticle(article.value).then(resp => {
+            console.log('保存文档', resp)
+            message.success('保存成功')
+          })
+        },
         plugins: [
           () => toolbar
-        ],
-        setup (starter) {
-          const collaborate = starter.get(Collaborate)
-
-          const provide = new WebrtcProvider('4444', collaborate.yDoc)
-          console.log(provide)
-          // 模拟多用户
-          const users: User[] = [
-            {
-              color: '#f00',
-              name: '张三'
-            }, {
-              color: '#448299',
-              name: '李国'
-            }, {
-              color: '#fe91dd',
-              name: '赵功'
-            }, {
-              color: '#1f2baf',
-              name: '载膛'
-            }, {
-              color: '#2aad30',
-              name: '魂牵梦萦'
-            }, {
-              color: '#c4ee6e',
-              name: '杰国'
-            }, {
-              color: '#00a6ff',
-              name: '膛世界杯'
-            }]
-          // 随机取一个用户
-          const user = users[Math.floor(Math.random() * users.length)]
-
-          const subscription = collaborate.onSelectionChange.subscribe(paths => {
-            const localSelection: RemoteSelection = {
-              username: user.name,
-              color: user.color,
-              paths
-            }
-            provide.awareness.setLocalStateField('selection', localSelection)
-          })
-
-          // 监听远端数据变化
-          provide.awareness.on('update', () => {
-            const users: User[] = []
-            const remoteSelections: RemoteSelection[] = []
-            provide.awareness.getStates().forEach(state => {
-              if (state.user) {
-                users.push(state.user)
-              }
-              if (state.selection) {
-                remoteSelections.push(state.selection)
-              }
-            })
-            // 过滤本地用户信息
-            const selections = remoteSelections.filter(i => i.username !== user.name)
-            // 绘制远端用户选区
-            collaborate.updateRemoteSelection(selections)
-            // 更新用户信息
-            const header = document.getElementById('user-info') as HTMLElement
-
-            header.innerHTML = users.map(i => {
-              return `<span style="color: ${i.color}">${i.name}</span>`
-            }).join('')
-          })
-          return () => {
-            // 编辑器销毁时，取消连接
-            provide.disconnect()
-            subscription.unsubscribe()
-          }
-        }
+        ]
       })
-
       editor.mount(editorContainer.value)
-      /* editor.onChange.subscribe(() => {
+      editor.onChange.subscribe(() => {
         console.log(editor.getContents())
-      }) */
+      })
     })
     return {
       collapsed: ref<boolean>(false),
+      menuList,
       editorContainer,
       selectedKeys,
+      article,
       handleClick
     }
   }
@@ -208,6 +203,7 @@ export default defineComponent({
 #header-wrapper {
   width: 100%;
   margin: auto;
+  background: white;
 }
 #toolbar {
   text-align: center;
@@ -216,6 +212,38 @@ export default defineComponent({
 #content-wrapper {
   width: 750px;
   margin: auto;
-  padding-top: 60px;
+  padding-top: 36px;
+}
+
+#editor /deep/ .textbus-ui-middle{
+  border: 0;
+}
+
+.trigger {
+  position: absolute;
+  top: 24%;
+  right: -12px;
+  z-index: 1;
+  width: 16px;
+  height: 42px;
+  font-size: 16px;
+  line-height: 42px;
+  text-align: center;
+  background: #eeeeee;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.title {
+  height: 64px;
+  font-size: 36px;
+  font-weight: bolder;
+}
+
+.users-wrapper {
+  position: absolute;
+  top: 64px;
+  right: 120px;
 }
 </style>

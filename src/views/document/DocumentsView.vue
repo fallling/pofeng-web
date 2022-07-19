@@ -102,14 +102,14 @@ export default defineComponent({
         console.log(resp)
         const article = resp.data
         console.log(article.content)
-        /* router.push(
+        router.push(
           {
             path: '/article',
             query: {
               article: article
             }
           }
-        ) */
+        )
       })
     }
     onMounted(() => {

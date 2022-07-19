@@ -160,3 +160,41 @@ export const createTeam = (params?: any) => {
     }
   })
 }
+
+export const getMembers = (params?: any) => {
+  return axios({
+    method: 'get',
+    url: 'members',
+    params: {
+      teamId: params
+    }
+  })
+}
+
+export const deleteTeam = (params?: any) => {
+  return axios({
+    method: 'delete',
+    url: 'team',
+    params: {
+      idList: params
+    }
+  })
+}
+
+export const getUser = (params?: any) => {
+  return axios({
+    method: 'get',
+    url: 'user/' + `${params}`
+  })
+}
+
+export const saveArticle = (params?: any) => {
+  return axios({
+    method: 'put',
+    url: 'article',
+    data: params,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+}

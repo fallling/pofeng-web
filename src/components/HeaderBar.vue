@@ -1,7 +1,7 @@
 <template>
   <div id="header">
     <div class="header-logo">
-      <img height="64"  style="vertical-align:top;" alt="logo" src="@/assets/pofengLogo.png">
+      <img height="64" style="vertical-align:top;" alt="logo" src="@/assets/pofengLogo.png">
     </div>
     <div class="header-menu">
       <a-menu
@@ -19,7 +19,7 @@
       </a-auto-complete>
     </div>
     <div class="header-avatar">
-      <a href="#">
+      <a @click="turnToNews">
         <a-badge dot>
           <BellOutlined />
         </a-badge>
@@ -31,7 +31,7 @@
         <template #overlay>
           <a-menu>
             <a-menu-item>
-              <a href="javascript:">个人空间</a>
+              <a @click="turnToPersonal">个人空间</a>
             </a-menu-item>
             <a-menu-item>
               <a href="javascript:">退出登录</a>
@@ -69,10 +69,24 @@ export default defineComponent({
         name: e.key.toString()
       })
     }
+    const turnToNews = () => {
+      console.log('turnToNews')
+      router.push({
+        path: 'notifications'
+      })
+    }
+    const turnToPersonal = () => {
+      console.log('turnToPersonal')
+      router.push({
+        path: 'homepage'
+      })
+    }
     return {
       currentMain,
       headerMenuHandleClick,
-      user
+      user,
+      turnToNews,
+      turnToPersonal
     }
   }
 })

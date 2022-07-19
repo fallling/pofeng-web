@@ -5,23 +5,26 @@
   </nav>-->
   <a-config-provider :locale="locale">
     <section id="app">
-      <router-view style="height: 100vh"/>
+      <router-view :key="route.fullPath" style="height: 100vh"/>
     </section>
   </a-config-provider>
 </template>
 
-<script>
+<script lang="ts">
 import locale from 'ant-design-vue/lib/locale/zh_CN'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
+import { useRoute } from 'vue-router'
 
 dayjs.locale('zh-cn')
 
 export default {
   name: 'App',
   setup () {
+    const route = useRoute()
     return {
-      locale
+      locale,
+      route
     }
   }
 }

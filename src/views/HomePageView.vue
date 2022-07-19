@@ -7,13 +7,13 @@
     <a-layout-content class="content-wrapper">
       <a-row :gutter="24">
         <a-col flex="296px">
-          <a-card style="width: 296px" id="userInfo">
+          <a-card style="width: 296px;" id="userInfo">
             <template #cover>
-              <a-avatar :size="160" style="margin: auto" :src="user.avatar"></a-avatar>
+              <a-avatar :size="160" style="margin: 60px auto;" :src="user.avatar"></a-avatar>
             </template>
             <a-card-meta>
               <template #title>
-                <div class="userInfo-name"> {{ user.nikeName }} </div>
+                <div class="userInfo-name"> {{ user.nickName }} </div>
               </template>
             </a-card-meta>
             <div class="userInfo-follow">
@@ -95,8 +95,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, onMounted, ref } from 'vue'
 import HeaderBar from '@/components/HeaderBar.vue'
+import { getUser } from '@/axios/api'
+import { useStore } from 'vuex'
 
 const dynamic = [
   {
@@ -129,6 +131,25 @@ export default defineComponent({
     HeaderBar
   },
   setup () {
+    const store = useStore()
+
+    const user = ref({
+      id: '1',
+      avatar: 'https://joeschmoe.io/api/v1/random',
+      nickName: '破风',
+      realName: '冷志强',
+      noticer: '2',
+      follow: '4',
+      location: '深圳市',
+      create: '2',
+      like: '23'
+    })
+    onMounted(() => {
+      getUser(store.getters.userId).then(resp => {
+        console.log('获取用户信息', resp)
+        user.value = resp.data
+      })
+    })
     return {
       user,
       dynamic

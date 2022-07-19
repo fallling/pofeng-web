@@ -47,7 +47,7 @@ export default defineComponent({
     TeamStartView
   },
   setup (props) {
-    const currentMenuItem = ref<string[]>(['start'])
+    const currentMenuItem = ref<string[]>(['TeamStartView'])
     const currentTabComponent = ref<string>('TeamStartView')
     const team = ref({
       teamName: '',

@@ -55,7 +55,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { BellOutlined, UserOutlined, LaptopOutlined, CalendarOutlined, CarryOutOutlined, TeamOutlined, InboxOutlined, DeleteOutlined, BookOutlined } from '@ant-design/icons-vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import type { MenuProps } from 'ant-design-vue'
 
 import WorkBenchView from '@/views/subView/WorkBenchView.vue'

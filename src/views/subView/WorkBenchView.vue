@@ -47,26 +47,25 @@
               <template #bodyCell="{ column, record, text }">
 
                 <template v-if="column.key === 'articleTitle'">
-                  <span><a>{{ text }}</a></span>
+                  <a @click="turnToArticle(record.articleId)">{{ text }}</a>
                 </template>
 
                 <template v-if="column.key === 'ascription'">
-                  <span><a>{{ record.nickName }}</a> / <a>{{ record.baseName }}</a></span>
+                  <a @click="turnToPerson(record.createUser)">{{ record.nickName }}</a> /
+                  <a @click="turnToBase(record.baseId)">{{ record.baseName }}</a>
                 </template>
 
                 <template v-if="column.key === 'action'">
-                  <span>
-                    <a-dropdown class="dropdown-wrapper" placement=bottom>
-                      <p @click.prevent><MoreOutlined/></p>
-                      <template #overlay>
-                        <a-menu>
-                          <a-menu-item><a> <EditOutlined/> 编辑 </a></a-menu-item>
-                          <a-menu-item><a> <LinkOutlined/> 设为快捷入口 </a></a-menu-item>
-                          <a-menu-item><a> <DeleteOutlined/> 移除记录 </a></a-menu-item>
-                        </a-menu>
-                      </template>
+                  <a-dropdown class="dropdown-wrapper" placement=bottom>
+                    <p @click.prevent><MoreOutlined/></p>
+                    <template #overlay>
+                      <a-menu>
+                        <a-menu-item><a> <EditOutlined/> 编辑 </a></a-menu-item>
+                        <a-menu-item><a> <LinkOutlined/> 设为快捷入口 </a></a-menu-item>
+                        <a-menu-item><a> <DeleteOutlined/> 移除记录 </a></a-menu-item>
+                      </a-menu>
+                    </template>
                   </a-dropdown>
-                  </span>
                 </template>
               </template>
             </a-table>
@@ -79,6 +78,7 @@
         <a-card title="新建" :bordered="false">
           <div style="display: flex">
             <div style="margin: 8px"><a @click=showArticleModal>文档</a></div>
+            <div style="margin: 8px"><a @click=showArticleModal>共享文档</a></div>
             <div style="margin: 8px"><a @click="showExcelModal">表格</a></div>
             <div style="margin: 8px"><a @click="showDrawModal">画板</a></div>
           </div>
@@ -153,6 +153,7 @@ import { defineComponent, onMounted, ref } from 'vue'
 import { PlusOutlined, DownOutlined, MoreOutlined, EditOutlined, LinkOutlined, DeleteOutlined } from '@ant-design/icons-vue'
 import { getArticles, getBaseList } from '@/axios/api'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 const columns = [
   { dataIndex: 'articleTitle', key: 'articleTitle' },
   { dataIndex: 'ascription', key: 'ascription' },
@@ -171,6 +172,7 @@ export default defineComponent({
     DeleteOutlined
   },
   setup () {
+    const router = useRouter()
     const store = useStore()
     const resentData = ref([])
     const baseData = ref([])
@@ -206,6 +208,30 @@ export default defineComponent({
     const QuickModalOK = () => {
       QuickVisible.value = false
     }
+    const turnToArticle = (articleId: string) => {
+      console.log('turnToArticle', articleId)
+      router.push({
+        path: 'document',
+        query: {
+          articleId: articleId
+        }
+      })
+    }
+    const turnToSharedArticle = (articleId: string) => {
+      console.log('turnToSharedArticle', articleId)
+      router.push({
+        path: 'sharedDocument',
+        query: {
+          articleId: articleId
+        }
+      })
+    }
+    const turnToPerson = (personId: string) => {
+      console.log('turnToPerson', personId)
+    }
+    const turnToBase = (baseId: string) => {
+      console.log('turnToBase', baseId)
+    }
 
     onMounted(() => {
       console.log('mounted')
@@ -230,7 +256,11 @@ export default defineComponent({
       showDrawModal,
       DrawModalOK,
       showQuickModal,
-      QuickModalOK
+      QuickModalOK,
+      turnToArticle,
+      turnToSharedArticle,
+      turnToPerson,
+      turnToBase
     }
   }
 })

@@ -75,7 +75,6 @@
 import debounce from 'lodash/debounce'
 import { defineComponent, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { createTeam, getFetchUser, getTeams } from '@/axios/api'
-import router from '@/router'
 import { useStore } from 'vuex'
 interface Team {
   teamId: string

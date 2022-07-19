@@ -65,21 +65,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, ref } from 'vue'
+import { defineComponent, onMounted, ref } from 'vue'
 import { MoreOutlined } from '@ant-design/icons-vue'
-import { createBase, getBase, getBaseList } from '@/axios/api'
+import { createBase, getBaseList } from '@/axios/api'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
-
-interface Base {
-  userId: string,
-  userName: string,
-  baseId: string,
-  baseName: string,
-  baseIntro: string,
-  createTime: string
-}
 
 const labelCol = { xs: { span: 24 }, sm: { span: 5 } }
 const wrapperCol = { xs: { span: 24 }, sm: { span: 18 } }
