@@ -22,7 +22,11 @@
       </a-layout-content>
 
       <a-layout-footer style="background-color: transparent; margin: 0 0 20px 0; padding: 0">
-        <a-input size="large" ref="userNameInput" v-model="newTaskTitle" style="width: 100%;"
+        <a-input size="large"
+                 ref="userNameInput"
+                 v-model:value="newTaskTitle"
+                 style="width: 100%;"
+                 @pressEnter="addTask"
                  placeholder="添加任务" >
         </a-input>
       </a-layout-footer>
@@ -97,7 +101,7 @@
 
 import { defineComponent, onMounted, ref } from 'vue'
 import { DeleteOutlined } from '@ant-design/icons-vue'
-import { getTasks, updateTask } from '@/axios/api'
+import { getTasks, postTask, updateTask } from '@/axios/api'
 
 interface Task {
   listId: string,
@@ -116,7 +120,7 @@ export default defineComponent({
     DeleteOutlined
   },
   setup () {
-    const newTaskTitle = ref('')
+    const newTaskTitle = ref()
     const taskList = ref<Task[]>()
     const collapsed = ref<boolean>(true)
     const taskInfo = ref<Task>({
@@ -143,7 +147,26 @@ export default defineComponent({
         collapsed.value = false
       })
     }
-
+    const addTask = () => {
+      console.log('newTask', newTaskTitle)
+      const newTask : Task = {
+        listId: '',
+        listTitle: newTaskTitle.value,
+        alarm: '',
+        deadline: '',
+        listRepeat: '',
+        files: '',
+        remark: '',
+        status: ''
+      }
+      postTask(newTask).then(resp => {
+        console.log('添加任务', resp)
+        getTasks(taskInfo.value).then(resp => {
+          console.log('添加成功', resp)
+          taskList.value = resp.data.records
+        })
+      })
+    }
     onMounted(() => {
       getTasks(taskInfo.value).then(resp => {
         console.log(resp)
@@ -156,7 +179,8 @@ export default defineComponent({
       collapsed,
       taskInfo,
       showInfo,
-      completeTask
+      completeTask,
+      addTask
     }
   }
 })

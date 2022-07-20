@@ -49,7 +49,7 @@ export default defineComponent({
   padding-top: 24px;
 }
 
-/*.ant-carousel >>> .slick-slide {
+.ant-carousel >>> .slick-slide {
   text-align: center;
   height: 213px;
   line-height: 213px;
@@ -59,5 +59,5 @@ export default defineComponent({
 
 .ant-carousel >>> .slick-slide h3 {
   color: #fff;
-}*/
+}
 </style>

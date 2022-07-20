@@ -78,7 +78,7 @@
         <a-card title="新建" :bordered="false">
           <div style="display: flex">
             <div style="margin: 8px"><a @click=showArticleModal>文档</a></div>
-            <div style="margin: 8px"><a @click=showArticleModal>共享文档</a></div>
+            <div style="margin: 8px"><a @click=showSharedArticleModal>共享文档</a></div>
             <div style="margin: 8px"><a @click="showExcelModal">表格</a></div>
             <div style="margin: 8px"><a @click="showDrawModal">画板</a></div>
           </div>
@@ -87,19 +87,38 @@
         <a-card title="快捷入口" :bordered="false">
           <template #extra><a @click="showQuickModal"><PlusOutlined/></a></template>
           <span>在这里<a @click="showQuickModal">添加</a>你的常用链接</span>
+          <a-list :data-source="quickLink">
+            <template #renderItem="{ item }">
+              <a-list-item><a :href="item.url">{{ item.title }}</a></a-list-item>
+            </template>
+          </a-list>
         </a-card>
       </div>
     </a-col>
     </a-row>
 
     <a-modal v-model:visible="ArticleVisible" title="新建文档" @ok="ArticleModalOK" :footer="null">
-      <p>请选择所属库</p>
+      <h3>请选择所属库</h3>
       <a-list item-layout="horizontal" :data-source="baseData">
         <template #renderItem="{ item }">
           <a-list-item>
             <a-list-item-meta>
               <template #title>
-                <a>{{ item.baseName }}</a>
+                <a @click="createArticle(item.baseId)">{{ item.baseName }}</a>
+              </template>
+            </a-list-item-meta>
+          </a-list-item>
+        </template>
+      </a-list>
+    </a-modal>
+    <a-modal v-model:visible="SharedArticleVisible" title="新建共享文档" @ok="ArticleModalOK" :footer="null">
+      <h3>请选择所属库</h3>
+      <a-list item-layout="horizontal" :data-source="baseData">
+        <template #renderItem="{ item }">
+          <a-list-item>
+            <a-list-item-meta>
+              <template #title>
+                <a @click="createSharedArticle(item.baseId)">{{ item.baseName }}</a>
               </template>
             </a-list-item-meta>
           </a-list-item>
@@ -151,16 +170,26 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue'
 import { PlusOutlined, DownOutlined, MoreOutlined, EditOutlined, LinkOutlined, DeleteOutlined } from '@ant-design/icons-vue'
-import { getArticles, getBaseList } from '@/axios/api'
+import { getArticles, getBaseList, postArticle } from '@/axios/api'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import { message } from 'ant-design-vue'
 const columns = [
   { dataIndex: 'articleTitle', key: 'articleTitle' },
   { dataIndex: 'ascription', key: 'ascription' },
   { dataIndex: 'lastEditTime', key: 'lastEditTime' },
   { key: 'action' }
 ]
-
+const quickLink = [
+  {
+    title: '百度',
+    url: 'http://www.baidu.com'
+  },
+  {
+    title: 'bilibili',
+    url: 'http://www.bilibili.com'
+  }
+]
 export default defineComponent({
   name: 'WorkBench',
   components: {
@@ -177,6 +206,7 @@ export default defineComponent({
     const resentData = ref([])
     const baseData = ref([])
     const ArticleVisible = ref<boolean>(false)
+    const SharedArticleVisible = ref<boolean>(false)
     const ExcelVisible = ref<boolean>(false)
     const DrawVisible = ref<boolean>(false)
     const QuickVisible = ref<boolean>(false)
@@ -189,6 +219,16 @@ export default defineComponent({
     }
     const ArticleModalOK = () => {
       ArticleVisible.value = false
+    }
+    const showSharedArticleModal = () => {
+      SharedArticleVisible.value = true
+      getBaseList(store.getters.userId).then(resp => {
+        console.log(resp)
+        baseData.value = resp.data.records
+      })
+    }
+    const sharedArticleModalOK = () => {
+      SharedArticleVisible.value = false
     }
     const showExcelModal = () => {
       ExcelVisible.value = true
@@ -233,6 +273,54 @@ export default defineComponent({
       console.log('turnToBase', baseId)
     }
 
+    const createArticle = (baseId: string) => {
+      const article = {
+        baseId: baseId,
+        articleId: '',
+        createUserId: store.getters.userId,
+        articleTitle: '新建文档',
+        lastEditTime: '',
+        content: '',
+        thumbs: '',
+        readNum: ''
+      }
+      postArticle(article).then(resp => {
+        console.log('新建文档', resp.data.articleId)
+        const newArticleId = resp.data.articleId
+        message.success('创建文档成功')
+        router.push({
+          path: '/document',
+          query: {
+            articleId: newArticleId
+          }
+        })
+      })
+    }
+
+    const createSharedArticle = (baseId: string) => {
+      const article = {
+        baseId: baseId,
+        articleId: '',
+        createUserId: store.getters.userId,
+        articleTitle: '新建共享文档',
+        lastEditTime: '',
+        content: '',
+        thumbs: '',
+        readNum: ''
+      }
+      postArticle(article).then(resp => {
+        console.log('新建共享文档', resp)
+        const newArticleId = resp.data.articleId
+        message.success('创建文档成功')
+        router.push({
+          path: '/sharedDocument',
+          query: {
+            articleId: newArticleId
+          }
+        })
+      })
+    }
+
     onMounted(() => {
       console.log('mounted')
       getArticles(store.getters.userId).then(resp => {
@@ -244,13 +332,17 @@ export default defineComponent({
     return {
       resentData,
       baseData,
+      quickLink,
       columns,
       ArticleVisible,
+      SharedArticleVisible,
       ExcelVisible,
       DrawVisible,
       QuickVisible,
       showArticleModal,
       ArticleModalOK,
+      showSharedArticleModal,
+      sharedArticleModalOK,
       showExcelModal,
       ExcelModalOK,
       showDrawModal,
@@ -260,7 +352,9 @@ export default defineComponent({
       turnToArticle,
       turnToSharedArticle,
       turnToPerson,
-      turnToBase
+      turnToBase,
+      createArticle,
+      createSharedArticle
     }
   }
 })

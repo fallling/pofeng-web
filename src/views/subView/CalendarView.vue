@@ -3,16 +3,17 @@
     <a-row type="flex" :gutter=36>
       <a-col flex="336px">
         <a-calendar
+          class="calendar"
+          :style="{ width: '300px', border: '1px solid #d9d9d9', borderRadius: '4px' }"
           valueFormat="YYYY-MM-DD"
           @select="selectDate"
           v-model:value="currentDate"
           :fullscreen="false">
           <template #dateCellRender="{ current }">
-            <ul class="events">
-              <li v-for="item in getListData(current)" :key="item">
-                <a-badge :status="item.type" :text="item.content" />
-              </li>
-            </ul>
+            <div v-for="item in getListData(current)" :key="item.id"
+                 style="align-items: center; ">
+              <a-badge :status="item.type" :text="item.content" style="margin: 0 0 0 10px" />
+            </div>
           </template>
         </a-calendar>
       </a-col>
@@ -201,10 +202,31 @@ export default defineComponent({
     const currentDate = ref()
     const schedules = ref<Schedule[]>([])
 
+    // 加载日历徽标
     const getListData = (value: Dayjs) => {
-      // TODO 日历显示徽标
-    }
+      /*      let res = false
+      console.log('vale', value.date())
+      schedules.value.forEach((item) => {
+        if (dayjs(item.startTime, 'YYYY-MM-DD').date() === value.date()) {
+          console.log('return true')
+          res = true
+        } else {
+          console.log('return false')
+          res = false
+        }
+      })
+      return res */
 
+      let listData
+      schedules.value.forEach((item) => {
+        if (dayjs(item.startTime, 'YYYY-MM-DD').date() === value.date()) {
+          listData = [
+            { type: 'success', content: '' }
+          ]
+        }
+      })
+      return listData || []
+    }
     // 过滤日程
     const currentSchedules = computed(() => schedules.value.filter(ele => {
       return dayjs(ele.startTime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD') === dayjs(currentDate.value).format('YYYY-MM-DD')
@@ -325,5 +347,13 @@ export default defineComponent({
 
 #newSchedule {
   margin: auto;
+}
+
+.calendar :deep .ant-picker-calendar-date-content {
+  position: absolute;
+}
+
+.calendar >>> .ant-picker-content td {
+  height: 50px;
 }
 </style>

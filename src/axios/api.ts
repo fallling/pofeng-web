@@ -198,3 +198,25 @@ export const saveArticle = (params?: any) => {
     }
   })
 }
+
+export const postTask = (params?: any) => {
+  return axios({
+    method: 'post',
+    url: 'todoList',
+    data: params,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+}
+
+export const postArticle = (params?: any) => {
+  return axios({
+    method: 'post',
+    url: 'article',
+    data: params,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+}
